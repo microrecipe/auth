@@ -76,7 +76,9 @@ export class AppService {
 
     const accessToken = this.jwtService.sign(tokenPayload, {
       secret: this.configService.get('JWT_TOKEN_SECRET_KEY'),
-      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRY_SECONDS'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRY_SECONDS',
+      )}s`,
     });
 
     return SignInDTO.toDTO(user, accessToken);
