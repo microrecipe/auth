@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignInDTO, SignUpDTO } from './auth.dto';
 import { User } from './auth.entity';
-import { SignIn, SignUp } from './auth.interface';
+import { SignIn, SignUp, TokenPayload } from './auth.interface';
 
 @Injectable()
 export class AppService {
@@ -30,7 +30,7 @@ export class AppService {
     return SignUpDTO.toDTO(user);
   }
 
-  async signIn(data: SignIn) {
+  async signIn(data: SignIn): Promise<SignInDTO> {
     const user = await this.usersRepository.findOneOrFail({
       where: {
         email: data.email,
@@ -38,7 +38,37 @@ export class AppService {
       },
     });
 
-    const tokenPayload = {
+    const tokenPayload: TokenPayload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    const accessToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.get('JWT_TOKEN_SECRET_KEY'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRY_SECONDS',
+      )}s`,
+    });
+
+    const refreshToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET_KEY'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRY_SECONDS',
+      )}s`,
+    });
+
+    return SignInDTO.toDTO(user, accessToken, refreshToken);
+  }
+
+  async refreshToken(data: TokenPayload): Promise<SignInDTO> {
+    const user = await this.usersRepository.findOneOrFail({
+      where: {
+        email: data.email,
+      },
+    });
+
+    const tokenPayload: TokenPayload = {
       id: user.id,
       name: user.name,
       email: user.email,
@@ -49,11 +79,6 @@ export class AppService {
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRY_SECONDS'),
     });
 
-    const refreshToken = this.jwtService.sign(tokenPayload, {
-      secret: this.configService.get('JWT_REFRESH_SECRET_KEY'),
-      expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRY_SECONDS'),
-    });
-
-    return SignInDTO.toDTO(accessToken, refreshToken, user);
+    return SignInDTO.toDTO(user, accessToken);
   }
 }

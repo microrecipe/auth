@@ -32,7 +32,7 @@ export class SignUpBody {
 }
 
 export class SignInDTO {
-  static toDTO(accessToken: string, refreshToken: string, user: User) {
+  static toDTO(user: User, accessToken?: string, refreshToken?: string) {
     const res = new SignInDTO();
 
     res.accessToken = accessToken;
