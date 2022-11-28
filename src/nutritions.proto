@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package nutritions;
+
+service NutritionsService {
+  rpc ListNutritionsByIngridientId (IngridientId) returns (ListNutritions) {}
+  rpc SetNutritionToIngridient (SetNutrition) returns (Nutrition) {}
+  rpc GetNutritionById (NutritionId) returns (Nutrition) {}
+}
+
+message IngridientId {
+  int32 id = 1;
+}
+
+message Nutrition {
+  int32 id = 1;
+  string name = 2;
+  string per_gram = 3;
+  int32 ingridient_id = 4;
+}
+
+message ListNutritions {
+  repeated Nutrition nutritions = 1;
+}
+
+message NutritionId {
+  int32 id = 1;
+}
+
+message SetNutrition {
+  int32 id = 1;
+  string per_gram = 2;
+  int32 ingridient_id = 3;
+}
