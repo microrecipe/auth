@@ -26,4 +26,11 @@ export class User {
     nullable: false,
   })
   password: string;
+
+  @Column({
+    name: 'is_admin',
+    type: 'bool',
+    nullable: true,
+  })
+  isAdmin: boolean;
 }

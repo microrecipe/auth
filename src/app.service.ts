@@ -42,6 +42,7 @@ export class AppService {
       id: user.id,
       name: user.name,
       email: user.email,
+      isAdmin: user.isAdmin,
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {
@@ -72,6 +73,7 @@ export class AppService {
       id: user.id,
       name: user.name,
       email: user.email,
+      isAdmin: user.isAdmin,
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {

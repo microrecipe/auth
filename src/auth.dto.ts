@@ -9,6 +9,7 @@ export class UserDTO {
     res.id = user.id;
     res.name = user.name;
     res.email = user.email;
+    res.isAdmin = user.isAdmin;
 
     return res;
   }
@@ -16,6 +17,9 @@ export class UserDTO {
   id: number;
   name: string;
   email: string;
+
+  @Expose({ name: 'is_admin' })
+  isAdmin: boolean;
 }
 
 export class SignUpDTO extends UserDTO {}
