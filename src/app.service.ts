@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt/dist';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,12 +31,14 @@ export class AppService {
   }
 
   async signIn(data: SignIn): Promise<SignInDTO> {
-    const user = await this.usersRepository.findOneOrFail({
-      where: {
-        email: data.email,
-        password: data.password,
-      },
+    const user = await this.usersRepository.findOneBy({
+      email: data.email,
+      password: data.password,
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const tokenPayload: TokenPayload = {
       id: user.id,
